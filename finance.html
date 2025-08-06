@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>財務指標比較レーダーチャート（ROE調整版）</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 90%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .note {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .chart-container {
+            position: relative;
+            height: 600px;
+            margin: 0 auto;
+        }
+        .roe-legend {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .roe-legend h3 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        .roe-item {
+            display: inline-block;
+            margin: 5px 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .analysis {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .highlight-box {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>財務指標比較分析 2024年度</h1>
+        <div class="note">
+            <strong>スケール調整について：</strong><br>
+            営業利益率・経常利益率：×10表示 | ROE：×3表示（最大30%を100として表示）<br>
+            総資本回転率：×50表示 | その他：実数値表示
+        </div>
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+        
+        <div class="roe-legend">
+            <h3>ROE実数値（自己資本利益率）</h3>
+            <div class="roe-item" style="color: #1E88E5;">cado: 26.70%</div>
+            <div class="roe-item" style="color: #FFA726;">I-ne: 17.76%</div>
+            <div class="roe-item" style="color: #42A5F5;">MTG: 5.62%</div>
+            <div class="roe-item" style="color: #66BB6A;">YAMAN: 1.59%</div>
+            <div class="roe-item" style="color: #9C27B0;">BALMUDA: 1.52%</div>
+            <div class="roe-item" style="color: #FF6B6B;">BRUNO: -6.56%</div>
+        </div>
+
+        <div class="analysis">
+            <div class="highlight-box">
+                <h3 style="margin-top: 0;">主要発見事項</h3>
+                <p>1. <strong>I-ne</strong>が営業利益率10.18%、経常利益率10.27%で<strong>収益性トップ</strong></p>
+                <p>2. <strong>cado</strong>はROE 26.70%で<strong>資本効率トップ</strong>（2位I-neの1.5倍）</p>
+                <p>3. <strong>BALMUDA</strong>は営業利益率0.10%と極めて低収益だが、財務は健全</p>
+                <p>4. <strong>BRUNO</strong>は総資本回転率201.6%で最高効率だが、赤字体質</p>
+            </div>
+
+            <h3>収益性ランキング</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background-color: #e9ecef;">
+                    <th style="padding: 10px; text-align: left;">指標</th>
+                    <th style="padding: 10px;">1位</th>
+                    <th style="padding: 10px;">2位</th>
+                    <th style="padding: 10px;">3位</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6;"><strong>営業利益率</strong></td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">I-ne (10.18%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">cado (6.26%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">YAMAN (5.52%)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6;"><strong>ROE</strong></td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">cado (26.70%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">I-ne (17.76%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">MTG (5.62%)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6;"><strong>売上総利益率</strong></td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">YAMAN (60.0%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">I-ne (59.7%)</td>
+                    <td style="padding: 10px; border-top: 1px solid #dee2e6; text-align: center;">I-ne (53.4%)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        
+        // ROEを3倍にして表示（最大30%を100として見やすく）
+        function scaleROE(value) {
+            if (value < 0) return 0; // マイナス値は0表示
+            return Math.min(value * 3, 100); // 3倍して最大100
+        }
+        
+        const data = {
+            labels: [
+                '営業利益率\n(×10)',
+                '経常利益率\n(×10)', 
+                '売上総利益率\n(%)',
+                'ROE\n(×3)',
+                '総資本回転率\n(×50)',
+                '自己資本比率\n(%)'
+            ],
+            datasets: [
+                {
+                    label: 'cado',
+                    data: [62.6, 56.2, 43.6, scaleROE(26.7), 69.1, 33.1],
+                    borderColor: '#1E88E5',
+                    backgroundColor: 'rgba(30, 136, 229, 0.2)',
+                    pointBackgroundColor: '#1E88E5',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#1E88E5',
+                    borderWidth: 3
+                },
+                {
+                    label: 'BALMUDA',
+                    data: [1.0, 7.5, 31.2, scaleROE(1.52), 100.8, 70.3],
+                    borderColor: '#9C27B0',
+                    backgroundColor: 'rgba(156, 39, 176, 0.2)',
+                    pointBackgroundColor: '#9C27B0',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#9C27B0',
+                    borderWidth: 2.5
+                },
+                {
+                    label: 'BRUNO',
+                    data: [11.3, 0.9, 44.3, scaleROE(-6.56), 62.6, 49.2],
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    pointBackgroundColor: '#FF6B6B',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#FF6B6B',
+                    borderWidth: 2.5
+                },
+                {
+                    label: 'MTG',
+                    data: [55.2, 60.7, 60.0, scaleROE(5.62), 61.5, 77.2],
+                    borderColor: '#42A5F5',
+                    backgroundColor: 'rgba(66, 165, 245, 0.2)',
+                    pointBackgroundColor: '#42A5F5',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#42A5F5',
+                    borderWidth: 2.5
+                },
+                {
+                    label: 'YAMAN',
+                    data: [13.0, 31.6, 59.7, scaleROE(1.59), 55.0, 86.3],
+                    borderColor: '#66BB6A',
+                    backgroundColor: 'rgba(102, 187, 106, 0.2)',
+                    pointBackgroundColor: '#66BB6A',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#66BB6A',
+                    borderWidth: 2.5
+                },
+                {
+                    label: 'I-ne',
+                    data: [101.8, 102.7, 53.4, scaleROE(17.76), 64.1, 47.1],
+                    borderColor: '#FFA726',
+                    backgroundColor: 'rgba(255, 167, 38, 0.2)',
+                    pointBackgroundColor: '#FFA726',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#FFA726',
+                    borderWidth: 3
+                }
+            ]
+        };
+
+        const config = {
+            type: 'radar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label;
+                                const index = context.dataIndex;
+                                const value = context.parsed.r;
+                                
+                                // 実際の値を表示
+                                if (index === 0) { // 営業利益率
+                                    return `${label}: ${(value/10).toFixed(2)}%`;
+                                } else if (index === 1) { // 経常利益率
+                                    return `${label}: ${(value/10).toFixed(2)}%`;
+                                } else if (index === 3) { // ROE
+                                    const roeValues = {
+                                        'cado': 26.70,
+                                        'BALMUDA': 1.52,
+                                        'BRUNO': -6.56,
+                                        'MTG': 5.62,
+                                        'YAMAN': 1.59,
+                                        'I-ne': 17.76
+                                    };
+                                    return `${label}: ${roeValues[label]}%`;
+                                } else if (index === 4) { // 総資本回転率
+                                    return `${label}: ${(value/50).toFixed(2)}回`;
+                                }
+                                return `${label}: ${value.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 120,
+                        ticks: {
+                            stepSize: 20,
+                            font: {
+                                size: 12
+                            }
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 13,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
+        };
+
+        const radarChart = new Chart(ctx, config);
+    </script>
+</body>
+</html>
